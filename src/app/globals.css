@@ -134,12 +134,13 @@
 }
 
 @layer components {
-  /* Brand text gradient for the wordmark */
+  /* Brand wordmark — solid cyan color.
+     Previously used background-clip: text with a gradient, but that rendered
+     as a solid blue STRIP on some mobile browsers (Android Chrome) where
+     background-clip: text fails while color: transparent still applies.
+     Solid color is universal, clean, and strip-free. */
   .brand-wordmark {
-    background: linear-gradient(135deg, oklch(0.96 0.005 240) 0%, var(--brand) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--brand);
   }
 
   /* Ambient homepage glow — single fixed, GPU-composited element.
