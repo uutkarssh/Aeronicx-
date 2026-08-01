@@ -1,0 +1,27 @@
+// Prisma schema for Aeronicx — Turso (libSQL) backend
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Video {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  thumbnail_url String?
+  download_url  String
+  file_size_mb  Int?
+  category      String?
+  downloads     Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("videos")
+}
