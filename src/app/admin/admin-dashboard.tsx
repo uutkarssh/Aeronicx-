@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import {
   ArrowLeft,
   Loader2,
@@ -175,12 +176,16 @@ export function AdminDashboard() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-40 border-b border-border bg-background">
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="grid place-items-center h-8 w-8 rounded-lg bg-brand text-brand-foreground shadow-[0_0_20px_-4px_var(--brand-glow)]">
-              <Film className="h-4 w-4" />
-            </span>
+            <Image
+              src="/aeronicx-logo.png"
+              alt="Aeronicx logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-lg object-cover"
+            />
             <div className="flex flex-col leading-tight">
               <span className="font-display text-base sm:text-lg font-semibold brand-wordmark">
                 Aeronicx Admin
@@ -362,13 +367,15 @@ export function AdminDashboard() {
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-14 rounded bg-muted overflow-hidden flex-shrink-0 grid place-items-center text-muted-foreground">
+                            <div className="relative h-10 w-14 rounded bg-muted overflow-hidden flex-shrink-0 grid place-items-center text-muted-foreground">
                               {v.thumbnail_url ? (
-                                 
-                                <img
+                                <Image
                                   src={v.thumbnail_url}
                                   alt=""
-                                  className="h-full w-full object-cover"
+                                  fill
+                                  unoptimized
+                                  sizes="56px"
+                                  className="object-cover"
                                   onError={(e) => {
                                     const el = e.currentTarget as HTMLImageElement
                                     el.style.display = 'none'
@@ -443,13 +450,15 @@ export function AdminDashboard() {
                 {videos.map((v) => (
                   <li key={v.id} className={`p-4 ${editingId === v.id ? 'bg-brand/5' : ''}`}>
                     <div className="flex items-start gap-3 mb-3">
-                      <div className="h-12 w-16 rounded bg-muted overflow-hidden flex-shrink-0 grid place-items-center text-muted-foreground">
+                      <div className="relative h-12 w-16 rounded bg-muted overflow-hidden flex-shrink-0 grid place-items-center text-muted-foreground">
                         {v.thumbnail_url ? (
-                           
-                          <img
+                          <Image
                             src={v.thumbnail_url}
                             alt=""
-                            className="h-full w-full object-cover"
+                            fill
+                            unoptimized
+                            sizes="64px"
+                            className="object-cover"
                             onError={(e) => {
                               const el = e.currentTarget as HTMLImageElement
                               el.style.display = 'none'

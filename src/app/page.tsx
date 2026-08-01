@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, useCallback } from 'react'
+import Image from 'next/image'
 import { Search, Download, Film, Zap, ShieldOff, Sparkles, Github, Loader2 } from 'lucide-react'
 import type { Video } from '@/lib/db'
 
@@ -70,12 +71,15 @@ export default function HomePage() {
   }, [videos, query])
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col relative">
+      {/* Ambient glow — single fixed, GPU-composited element. Only on homepage. */}
+      <div className="ambient-glow" aria-hidden="true" />
+
       <SiteHeader />
 
-      <section className="relative px-4 sm:px-6 pt-6 sm:pt-10 pb-8 sm:pb-12 max-w-7xl mx-auto w-full">
+      <section className="relative z-10 px-4 sm:px-6 pt-6 sm:pt-10 pb-8 sm:pb-12 max-w-7xl mx-auto w-full">
         <div className="flex flex-col items-start gap-4 sm:gap-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 backdrop-blur px-3 py-1 text-xs sm:text-sm text-muted-foreground">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs sm:text-sm text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 text-brand" />
             <span>One-click downloads. No ads. No redirects.</span>
           </div>
@@ -117,7 +121,7 @@ export default function HomePage() {
       </section>
 
       {/* Video grid */}
-      <section className="px-4 sm:px-6 pb-12 sm:pb-16 max-w-7xl mx-auto w-full flex-1">
+      <section className="relative z-10 px-4 sm:px-6 pb-12 sm:pb-16 max-w-7xl mx-auto w-full flex-1">
         <div className="flex items-baseline justify-between mb-4 sm:mb-6">
           <h2 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">
             Catalog
@@ -159,12 +163,17 @@ export default function HomePage() {
 
 function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2 group" aria-label="Aeronicx home">
-          <span className="grid place-items-center h-8 w-8 rounded-lg bg-brand text-brand-foreground shadow-[0_0_20px_-4px_var(--brand-glow)]">
-            <Film className="h-4 w-4" />
-          </span>
+          <Image
+            src="/aeronicx-logo.png"
+            alt="Aeronicx logo"
+            width={32}
+            height={32}
+            priority
+            className="h-8 w-8 rounded-lg object-cover"
+          />
           <span className="font-display text-lg sm:text-xl font-semibold brand-wordmark">
             Aeronicx
           </span>
@@ -180,7 +189,7 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-border bg-background/60">
+    <footer className="relative z-10 mt-auto border-t border-border bg-background">
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <span className="font-display font-semibold text-foreground">Aeronicx</span>
@@ -197,7 +206,7 @@ function SiteFooter() {
 
 function FeatureBadge({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 py-1.5 text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground">
       <span className="text-brand">{icon}</span>
       {label}
     </span>
@@ -219,10 +228,12 @@ function VideoCard({
     <article className="card-glow group rounded-2xl border border-border bg-card overflow-hidden flex flex-col">
       <div className="relative aspect-video bg-muted overflow-hidden">
         {thumb ? (
-           
-          <img
+          <Image
             src={thumb}
             alt={video.title}
+            fill
+            unoptimized
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             onError={(e) => {
@@ -242,17 +253,17 @@ function VideoCard({
           <Film className="h-8 w-8 opacity-50" />
         </div>
 
-        {/* Badges overlay */}
+        {/* Badges overlay — solid bg, no backdrop-blur */}
         <div className="absolute top-2 left-2 flex gap-1.5 flex-wrap">
           {video.category && (
-            <span className="rounded-md bg-background/80 backdrop-blur text-foreground border border-border px-2 py-0.5 text-[10px] sm:text-xs font-medium">
+            <span className="rounded-md bg-background/90 text-foreground border border-border px-2 py-0.5 text-[10px] sm:text-xs font-medium">
               {video.category}
             </span>
           )}
         </div>
         {sizeLabel && (
           <div className="absolute top-2 right-2">
-            <span className="rounded-md bg-background/80 backdrop-blur text-foreground border border-border px-2 py-0.5 text-[10px] sm:text-xs font-medium">
+            <span className="rounded-md bg-background/90 text-foreground border border-border px-2 py-0.5 text-[10px] sm:text-xs font-medium">
               {sizeLabel}
             </span>
           </div>

@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Lock, Film, ArrowLeft } from 'lucide-react'
+import Image from 'next/image'
+import { Loader2, Lock, ArrowLeft } from 'lucide-react'
 
 export function AdminLogin() {
   const router = useRouter()
@@ -56,9 +57,13 @@ export function AdminLogin() {
 
         <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-[0_0_60px_-20px_var(--brand-glow)]">
           <div className="flex items-center gap-3 mb-6">
-            <span className="grid place-items-center h-10 w-10 rounded-xl bg-brand text-brand-foreground shadow-[0_0_20px_-4px_var(--brand-glow)]">
-              <Film className="h-5 w-5" />
-            </span>
+            <Image
+              src="/aeronicx-logo.png"
+              alt="Aeronicx logo"
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded-xl object-cover"
+            />
             <div>
               <h1 className="font-display text-lg font-semibold brand-wordmark">
                 Aeronicx Admin

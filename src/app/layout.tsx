@@ -29,7 +29,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Aeronicx" }],
   icons: {
-    icon: "/logo.svg",
+    icon: "/aeronicx-logo.png",
+    apple: "/aeronicx-logo.png",
   },
   openGraph: {
     title: "Aeronicx — Fast. Free. No Ads.",
