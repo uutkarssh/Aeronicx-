@@ -24,6 +24,7 @@ export interface Video {
   file_size_mb: number | null
   category: string | null
   downloads: number
+  streams: number
   is_pinned: boolean
   created_at: string
   updated_at: string
@@ -41,12 +42,20 @@ export interface VideoInput {
 
 async function ensureSchema(): Promise<void> {
   if (!globalForDb.schemaReady) {
-    globalForDb.schemaReady = db.execute(
-      `ALTER TABLE videos ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0;`,
-    ).then(() => undefined).catch(async (error) => {
-      const message = String(error?.message ?? error)
-      if (!message.toLowerCase().includes('duplicate column')) throw error
-    })
+    globalForDb.schemaReady = (async () => {
+      const migrations = [
+        `ALTER TABLE videos ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0;`,
+        `ALTER TABLE videos ADD COLUMN streams INTEGER NOT NULL DEFAULT 0;`,
+      ]
+      for (const sql of migrations) {
+        try {
+          await db.execute(sql)
+        } catch (error) {
+          const message = String(error?.message ?? error).toLowerCase()
+          if (!message.includes('duplicate column')) throw error
+        }
+      }
+    })()
   }
   return globalForDb.schemaReady
 }
@@ -61,6 +70,7 @@ function rowToVideo(row: Record<string, unknown>): Video {
     file_size_mb: row.file_size_mb == null ? null : Number(row.file_size_mb),
     category: row.category == null ? null : String(row.category),
     downloads: row.downloads == null ? 0 : Number(row.downloads),
+    streams: row.streams == null ? 0 : Number(row.streams),
     is_pinned: Boolean(Number(row.is_pinned ?? 0)),
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
@@ -86,8 +96,8 @@ export async function createVideo(input: VideoInput): Promise<Video> {
   await ensureSchema()
   const id = makeId()
   await db.execute({
-    sql: `INSERT INTO videos (id, title, description, thumbnail_url, download_url, file_size_mb, category, downloads, is_pinned)
-          VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?);`,
+    sql: `INSERT INTO videos (id, title, description, thumbnail_url, download_url, file_size_mb, category, downloads, streams, is_pinned)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?);`,
     args: [id, input.title, input.description ?? null, input.thumbnail_url ?? null, input.download_url, input.file_size_mb ?? null, input.category ?? null, input.is_pinned ? 1 : 0],
   })
   const created = await getVideo(id)
@@ -128,6 +138,11 @@ export async function deleteVideo(id: string): Promise<boolean> {
 export async function incrementDownloads(id: string): Promise<void> {
   await ensureSchema()
   await db.execute({ sql: `UPDATE videos SET downloads = downloads + 1 WHERE id = ?;`, args: [id] })
+}
+
+export async function incrementStreams(id: string): Promise<void> {
+  await ensureSchema()
+  await db.execute({ sql: `UPDATE videos SET streams = streams + 1 WHERE id = ?;`, args: [id] })
 }
 
 function makeId(): string {
